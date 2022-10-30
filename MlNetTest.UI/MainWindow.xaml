@@ -7,6 +7,10 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Image Name="ImageView" HorizontalAlignment="Left" Height="217" Margin="42,37,0,0" VerticalAlignment="Top" Width="393"/>
+        <Button Click="Button_Click" Content="Анализ" HorizontalAlignment="Left" Margin="42,289,0,0" VerticalAlignment="Top" Height="30" Width="185"/>
+        <TextBlock HorizontalAlignment="Left" Name="Result" Margin="518,37,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="63" Width="205"/>
+        <Label Content="Результат" HorizontalAlignment="Left" Margin="538,10,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>
