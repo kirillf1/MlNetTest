@@ -4,7 +4,7 @@
   "DataSource": {
     "Type": "Folder",
     "Version": 1,
-    "FolderPath": "D:\\Code\\MlNetTest\\Docs"
+    "FolderPath": "D:\\test"
   },
   "Environment": {
     "Type": "LocalCPU",
