@@ -26,15 +26,17 @@ namespace DocumentClassificationModels
             IDataView shuffledData = mlContext.Data.ShuffleRows(imageData);
             //var resizing = mlContext.Transforms
             //    .ResizeImages("input", 300, 300, "input");
-            var preprocessingPipeline = mlContext.Transforms.Conversion.MapValueToKey(inputColumnName: "Label", outputColumnName: "LabelAsKey")
+            var preprocessingPipeline = mlContext.Transforms.Conversion
+                .MapValueToKey(inputColumnName: "Label", outputColumnName: "LabelAsKey")
     .Append(mlContext.Transforms.LoadRawImageBytes(
         outputColumnName: "Image",
         imageFolder: assetsRelativePath,
-        inputColumnName: "ImagePath"));
+        inputColumnName: "ImagePath"))
+                               ;
             IDataView preProcessedData = preprocessingPipeline
                     .Fit(shuffledData)
                     .Transform(shuffledData);
-            TrainTestData trainSplit = mlContext.Data.TrainTestSplit(data: preProcessedData, testFraction: 0.3);
+            TrainTestData trainSplit = mlContext.Data.TrainTestSplit(data: preProcessedData, testFraction: 0.1);
             TrainTestData validationTestSplit = mlContext.Data.TrainTestSplit(trainSplit.TestSet);
             IDataView trainSet = trainSplit.TrainSet;
             IDataView validationSet = validationTestSplit.TrainSet;
@@ -45,18 +47,18 @@ namespace DocumentClassificationModels
                 LabelColumnName = "LabelAsKey",
                 ScoreColumnName = "Score",
                 ValidationSet = validationSet,
-                Epoch = 400,
+                Epoch = 500,
                 Arch = ImageClassificationTrainer.Architecture.ResnetV250,
                 MetricsCallback = (metrics) => Console.WriteLine(metrics),
-                TestOnTrainSet = true,
+                TestOnTrainSet = false,
                 ReuseTrainSetBottleneckCachedValues = true,
                 ReuseValidationSetBottleneckCachedValues = true
             };
             var trainingPipeline = mlContext.MulticlassClassification.Trainers.ImageClassification(classifierOptions)
     .Append(mlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel"));
             ITransformer trainedModel = trainingPipeline.Fit(trainSet);
-            ClassifySingleImage(mlContext, testSet, trainedModel);
-            ClassifyImages(mlContext, testSet, trainedModel);
+            //ClassifySingleImage(mlContext, testSet, trainedModel);
+            //ClassifyImages(mlContext, testSet, trainedModel);
             mlContext.Model.Save(trainedModel, trainSet.Schema, Path.Combine(projectDirectory, "workspace", "model.zip"));
         }
         
@@ -124,7 +126,7 @@ namespace DocumentClassificationModels
                         }
                     }
                 }
-                yield return new DocumentData(file, label);
+                yield return new DocumentData { ImagePath = file, Label = label };
             }
 
         }
